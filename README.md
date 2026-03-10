@@ -1,127 +1,161 @@
-This project presents a profit-oriented crop recommendation system that analyzes agricultural production data and market price trends to identify the most profitable crops for different regions. The system combines machine learning models with economic indicators and explainable AI techniques to support data-driven agricultural decision making.
+# Crop Profit Maximization using Machine Learning
 
-Unlike traditional crop recommendation systems that focus mainly on soil or climatic suitability, this framework prioritizes economic profitability by integrating crop yield data with mandi (market) price analytics.
+Machine learning based system for **crop recommendation and profit maximization** using agricultural datasets such as **crop yield, soil conditions, and market (mandi) price data**.
 
-Project Objectives
+The model analyzes environmental and market factors to recommend crops that can provide **higher profitability for farmers**.
 
-Predict crop profitability using agricultural production and market price data
+---
+## Installation
 
-Identify the most profitable crops for different states and districts
+Clone the repository:
 
-Apply machine learning models for profit prediction
+```bash
+git clone https://github.com/YOUR_USERNAME/crop-profit-maximization.git
+cd crop-profit-maximization
+```
 
-Use explainable AI techniques to interpret model decisions
+Install required dependencies:
 
-Provide data-driven insights for farmers and agricultural planners
+```bash
+pip install pandas numpy scikit-learn matplotlib seaborn
+```
 
-Datasets
+---
+## Import Modules
 
-The project uses two publicly available datasets sourced from Kaggle:
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+```
 
-Crop Yield Dataset
-Contains agricultural production statistics including:
+---
+## Dataset
 
-State
+The project uses two datasets:
 
-District
+### Crop Dataset
+Contains agricultural parameters such as:
 
-Crop
+- Soil type
+- Soil quality
+- Nutrient levels
+- pH value
+- Moisture content
+- Temperature
 
-Area cultivated
+### Mandi Dataset
+Contains market information such as:
 
-Production
+- Crop name
+- Market price
+- Demand trends
 
-Yield
+Both datasets are sourced from **Kaggle**.
 
-Crop year
+---
+## Data Loading
 
-Season
+Example code to load the dataset:
 
-Mandi Price Dataset
-Contains agricultural market price information including:
+```python
+crop_data = pd.read_csv("crop_dataset.csv")
+mandi_data = pd.read_csv("mandi_dataset.csv")
 
-State
+print(crop_data.head())
+```
 
-District
+---
+## Data Preprocessing
 
-Commodity (Crop)
+```python
+features = crop_data[['soil_quality','ph','moisture','temperature']]
 
-Modal price
+scaler = StandardScaler()
+scaled_features = scaler.fit_transform(features)
+```
 
-Price date
+---
+## Model Training
 
-These datasets were combined to build a profit modeling dataset by merging crop production information with market price data.
+K-Means clustering is used to group crops based on environmental conditions.
 
-Technologies Used
+```python
+kmeans = KMeans(n_clusters=4, random_state=42)
 
-Python
+kmeans.fit(scaled_features)
 
-Pandas
+crop_data['cluster'] = kmeans.labels_
+```
 
-NumPy
+---
+## Crop Recommendation
 
-Scikit-Learn
+Example function for recommending crops:
 
-Matplotlib
+```python
+def recommend_crop(input_data):
 
-Seaborn
+    scaled = scaler.transform([input_data])
+    cluster = kmeans.predict(scaled)
 
-SHAP (Explainable AI)
+    recommended = crop_data[crop_data['cluster'] == cluster[0]]
 
-ALE (Accumulated Local Effects)
+    return recommended['crop_name'].unique()
+```
 
-Machine Learning Models
+---
+## Profit Analysis
 
-The project implements multiple models to predict crop profitability:
+The system combines crop clusters with **market price data** to determine profitable crops.
 
-Linear Regression (Baseline Model)
+```python
+profit_data = crop_data.merge(mandi_data, on="crop_name")
 
-Random Forest Regressor
+profit_data['expected_profit'] = profit_data['yield'] * profit_data['price']
+```
 
-Hyperparameter tuned Random Forest
+---
+## Results
 
-Model performance is evaluated using:
+The model helps:
 
-R² Score
+- Identify crops suitable for specific soil conditions
+- Analyze market price trends
+- Recommend crops with **higher profitability**
 
-Mean Absolute Error (MAE)
+---
+## Project Structure
 
-Root Mean Squared Error (RMSE)
+```
+crop-profit-maximization
+│
+├── crop_profit_model.ipynb
+├── crop_dataset.csv
+├── mandi_dataset.csv
+└── README.md
+```
 
-Explainable AI
+---
+## Technologies Used
 
-To improve model transparency and interpretability, the project integrates:
+- Python
+- Pandas
+- NumPy
+- Scikit-learn
+- Matplotlib
+- Jupyter Notebook
 
-SHAP (SHapley Additive Explanations)
-Used to analyze feature importance and understand how different variables influence profitability predictions.
+---
+## Future Improvements
 
-ALE (Accumulated Local Effects)
-Used to analyze how individual features affect model predictions while accounting for feature interactions.
+Possible enhancements:
 
-Key Features
+- Integration with **real-time market price APIs**
+- Weather forecasting integration
+- Mobile application for farmers
+- Deep learning based crop yield prediction
 
-Integration of crop yield and mandi price data
-
-Profit-based crop recommendation framework
-
-Machine learning based profitability prediction
-
-Explainable AI using SHAP and ALE
-
-State and district level crop ranking
-
-Advanced feature engineering and economic indicators
-
-Data visualization and correlation analysis
-
-Output
-
-The system provides:
-
-Profit prediction for crops
-
-Ranking of crops by profitability for a region
-
-Feature importance explanations
-
-Visualization of relationships between agricultural and economic factors
+---
